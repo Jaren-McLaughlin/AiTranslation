@@ -26,8 +26,10 @@ TRANSLATOR_KEY = secrets_dict.get("translate_key") or os.getenv("TRANSLATEKEY")
 TRANSLATOR_REGION = secrets_dict.get("translate_region") or os.getenv("TRANSLATEREGION") or "global"
 
 SOURCE_LANGUAGE = "en-US"
-TARGET_LANGUAGE = "zh-CN"
-TTS_VOICE = "zh-CN-XiaoxiaoNeural"
+# TARGET_LANGUAGE = "zh-CN"
+# TTS_VOICE = "zh-CN-XiaoxiaoNeural"
+TARGET_LANGUAGE = "pt-BR"
+TTS_VOICE = "pt-BR-FranciscaNeural"
 
 # --- INPUT CONFIG ---
 USE_MIC = False  
