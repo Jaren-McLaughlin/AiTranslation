@@ -24,10 +24,18 @@ TRANSLATOR_KEY = secrets["translate_key"]
 TRANSLATOR_REGION = secrets.get("translate_region", "global")
 
 SOURCE_LANGUAGE = "en-US"
-TARGET_LANGUAGE = "zh-CN"
-TTS_VOICE = "zh-CN-XiaoxiaoNeural"
+# TARGET_LANGUAGE = "zh-CN"
+# TTS_VOICE = "zh-CN-XiaoxiaoNeural"
 # TARGET_LANGUAGE = "pt-BR"
 # TTS_VOICE = "pt-BR-FranciscaNeural"
+# TARGET_LANGUAGE = "es-ES"
+# TTS_VOICE = "es-ES-ElviraNeural"
+# TARGET_LANGUAGE = "fr-FR"
+# TTS_VOICE = "fr-FR-DeniseNeural"
+# TARGET_LANGUAGE = "ja-JP"
+# TTS_VOICE = "ja-JP-NanamiNeural"
+TARGET_LANGUAGE = "ko-KR"
+TTS_VOICE = "ko-KR-InJoonNeural"
 
 AUDIO_FILE = r"C:\Research\TranslateCapstone\browning.mp4"
 
@@ -37,13 +45,15 @@ LAG_BUFFER_WORDS = 1
 
 # --- DYNAMIC SPEED CONFIG ---
 BASE_TTS_RATE = "1.4"
+if TARGET_LANGUAGE in ["ja-JP", "ko-KR"]:
+    BASE_TTS_RATE = "1.7"
 FAST_TTS_RATE = "1.9"
 QUEUE_THRESHOLD = 1        
 
 import csv
 from pathlib import Path
 
-CSV_PATH = Path(f"latency_log{TARGET_LANGUAGE}.csv")
+CSV_PATH = Path(f"latency_log{TARGET_LANGUAGE}b.csv")
 
 CSV_HEADER = [
     "id",
@@ -322,10 +332,10 @@ def main():
         else:
             punct = combined
 
-        flushed_any = False
+        punc_regex = r"[,.?!]" if TARGET_LANGUAGE not in ["ja-JP", "ko-KR", "de-DE", "zh-CN"] else r"[.?!]"
 
-        # for m in re.finditer(r"[,.?!]", punct):
-        for m in re.finditer(r"[.?!]", punct): # Testing chinese
+        for m in re.finditer(punc_regex, punct):
+        # for m in re.finditer(r"[.?!]", punct): # Testing chinese
             tail = punct[m.end():].split()
 
             if not final and len(tail) < LAG_BUFFER_WORDS:
@@ -337,7 +347,6 @@ def main():
             state["idx"] += wc
             flush(segment, "EARLY")
             state["t0"] = time.perf_counter()
-            flushed_any = True
 
         # 🔑 FINAL must only flush what remains
         if final:
