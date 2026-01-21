@@ -73,7 +73,7 @@ if not CSV_PATH.exists():
 # SILERO
 # -------------------------------------------------------------------
 
-def load_silero():
+def load_silero(): # TODO - Decide if we want to load the model from the hub or download a local copy
     print("[INIT] Loading Silero punctuation...")
     model, _, _, _, apply_te = torch.hub.load(
         repo_or_dir="snakers4/silero-models",
@@ -117,18 +117,45 @@ def pump_audio_from_file(push_stream, filename):
 # -------------------------------------------------------------------
 
 def mt_worker(mt_q, tts_q):
-    # Re-init session inside process
+    # Re-init session inside process for safety
     session = requests.Session()
     print("✅ MT Worker Started")
+    
+    # State to track the previously translated sentence
+    last_processed_text = ""
     
     while True:
         item = mt_q.get()
         if item is None: break
         
         text = item["text"]
+        
+        # Pass empty items (often used for signaling) straight through
         if not text.strip():
-            tts_q.put(item) # Pass empty logic
+            tts_q.put(item) 
             continue
+
+        # ---------------------------------------------------------
+        # DEDUPLICATION FILTER
+        # ---------------------------------------------------------
+        clean_new = text.strip().lower()
+        clean_last = last_processed_text.strip().lower()
+        
+        # Check 1: Exact Duplicate 
+        # (Fixes the "Hello world" -> "Hello world" stutter)
+        if clean_new == clean_last:
+             print(f"[SKIP] Exact duplicate detected: '{text}'")
+             continue
+             
+        # Check 2: Substring/Backtrack Duplicate 
+        # (Fixes rare cases where "Hello world" is sent, followed by just "Hello")
+        if len(clean_new) > 0 and clean_new in clean_last:
+             print(f"[SKIP] Substring duplicate detected: '{text}'")
+             continue
+        
+        # Update history for the next loop
+        last_processed_text = text
+        # ---------------------------------------------------------
 
         try:
             r = session.post(
@@ -146,7 +173,7 @@ def mt_worker(mt_q, tts_q):
             item["translated"] = r.json()[0]["translations"][0]["text"]
         except Exception as e:
             print(f"[MT FAIL] {e}")
-            item["translated"] = text # Fallback
+            item["translated"] = text # Fallback to original text
 
         tts_q.put(item)
 
@@ -335,7 +362,6 @@ def main():
         punc_regex = r"[,.?!]" if TARGET_LANGUAGE not in ["ja-JP", "ko-KR", "de-DE", "zh-CN"] else r"[.?!]"
 
         for m in re.finditer(punc_regex, punct):
-        # for m in re.finditer(r"[.?!]", punct): # Testing chinese
             tail = punct[m.end():].split()
 
             if not final and len(tail) < LAG_BUFFER_WORDS:
@@ -347,21 +373,11 @@ def main():
             state["idx"] += wc
             flush(segment, "EARLY")
             state["t0"] = time.perf_counter()
-
-        # 🔑 FINAL must only flush what remains
-        if final:
-            remaining_words = words[state["idx"]:]
-            if remaining_words:
-                remaining = " ".join(remaining_words).strip()
-                if remaining:
-                    flush(remaining, "FINAL")
-
-            # Reset for next utterance
-            state["idx"] = 0
-            state["t0"] = None
-            state["last_clean"] = ""
-            state["last_punct"] = ""
-
+            
+            # --- FIX: BREAK IMMEDIATELY ---
+            # We consumed part of the buffer. We must stop and let the 
+            # next 'process' call handle the remaining words using the new 'idx'.
+            return
 
     recognizer.recognizing.connect(lambda e: process(e.result.text))
     recognizer.recognized.connect(lambda e: process(e.result.text, True))
