@@ -10,3 +10,7 @@
 - requirements.txt - includes the pertinent libraries installed via pip necessary for the code to run. You might run into a few things installed outside of pip like ffmpeg but chat or gemini can walk you through those. This set of libraries might have a few libraries that are decently large which most of these files don't require to run, so there's something to just manually fetching the right libraries and then regenerating the requirements.txt
 
 - tannerPlusSileroChatTest.py - testing out some optimizations suggested by chat, looks pretty promising with portuguese for now, keeping latency around 4-7 seconds and almost always below 10s. It's actually mostly under 10 for chinese as well.
+- playbackSpeedTester.py - This takes in the output from an audio file and reports the delay for each translation, recording it in more detail in appropriate csvs. 
+- asrQualityChecker.py - This is just for checking the straight quality drop from asr as compared to the original talk.
+- segmentTranslator - This script is mainly for checking quality. It uses bleu or comet to report the quality drop of translation as compared to the original for a language using our segmentation methods. 
+geminiOptimized - This script just combines some optimizations suggested by LLMs so that the code will hopefully run a little faster. Still needs some testing but is probably the best that we currently have. 
