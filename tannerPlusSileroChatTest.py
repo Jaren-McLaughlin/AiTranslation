@@ -28,14 +28,14 @@ SOURCE_LANGUAGE = "en-US"
 # TTS_VOICE = "zh-CN-XiaoxiaoNeural"
 # TARGET_LANGUAGE = "pt-BR"
 # TTS_VOICE = "pt-BR-FranciscaNeural"
-# TARGET_LANGUAGE = "es-ES"
-# TTS_VOICE = "es-ES-ElviraNeural"
+TARGET_LANGUAGE = "es-ES"
+TTS_VOICE = "es-ES-ElviraNeural"
 # TARGET_LANGUAGE = "fr-FR"
 # TTS_VOICE = "fr-FR-DeniseNeural"
 # TARGET_LANGUAGE = "ja-JP"
 # TTS_VOICE = "ja-JP-NanamiNeural"
-TARGET_LANGUAGE = "ko-KR"
-TTS_VOICE = "ko-KR-InJoonNeural"
+# TARGET_LANGUAGE = "ko-KR"
+# TTS_VOICE = "ko-KR-InJoonNeural"
 
 AUDIO_FILE = r"C:\Research\TranslateCapstone\browning.mp4"
 
@@ -44,9 +44,9 @@ MIN_WORDS_FOR_SILERO = 6
 LAG_BUFFER_WORDS = 1       
 
 # --- DYNAMIC SPEED CONFIG ---
-BASE_TTS_RATE = "1.4"
+BASE_TTS_RATE = "1.3"
 if TARGET_LANGUAGE in ["ja-JP", "ko-KR"]:
-    BASE_TTS_RATE = "1.7"
+    BASE_TTS_RATE = "1.5"
 FAST_TTS_RATE = "1.9"
 QUEUE_THRESHOLD = 1        
 

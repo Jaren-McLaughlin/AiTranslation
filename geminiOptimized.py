@@ -37,7 +37,8 @@ MIN_WORDS_FOR_SILERO = 4
 LAG_BUFFER_WORDS = 2            
 
 # --- DYNAMIC SPEED CONFIG ---
-BASE_TTS_RATE = "1.2"
+BASE_TTS_RATE = "1.3"
+# possibly adjust to 1.5x for asian languages
 FAST_TTS_RATE = "1.6"           
 
 # Threshold: If latency > 2.5s for 3 segments in a row, speed up.
