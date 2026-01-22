@@ -13,4 +13,4 @@
 - playbackSpeedTester.py - This takes in the output from an audio file and reports the delay for each translation, recording it in more detail in appropriate csvs. 
 - asrQualityChecker.py - This is just for checking the straight quality drop from asr as compared to the original talk.
 - segmentTranslator - This script is mainly for checking quality. It uses bleu or comet to report the quality drop of translation as compared to the original for a language using our segmentation methods. 
-geminiOptimized - This script just combines some optimizations suggested by LLMs so that the code will hopefully run a little faster. Still needs some testing but is probably the best that we currently have. 
+- geminiOptimized - This script just combines some optimizations suggested by LLMs so that the code will hopefully run a little faster. Still needs some testing but is probably the best that we currently have. **use this one for now**
