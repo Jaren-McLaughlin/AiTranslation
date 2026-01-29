@@ -27,8 +27,10 @@ TRANSLATOR_KEY = secrets.get("translate_key") or os.getenv("TRANSLATEKEY")
 TRANSLATOR_REGION = secrets.get("translate_region") or "global"
 
 SOURCE_LANGUAGE = "en-US"
-TARGET_LANGUAGE = "pt-BR"
-TTS_VOICE = "pt-BR-FranciscaNeural"
+# TARGET_LANGUAGE = "pt-BR"
+# TTS_VOICE = "pt-BR-FranciscaNeural"
+TARGET_LANGUAGE = "am-ET"
+TTS_VOICE = "am-ET-MekdesNeural"
 
 USE_MIC = True
 AUDIO_FILE = "locked.wav"
