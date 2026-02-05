@@ -10,6 +10,11 @@ import torch
 import subprocess
 import pyaudio
 import numpy as np
+from fuzzyMatcher import TranslationMemoryMatcher
+
+matcher = TranslationMemoryMatcher('browningSentences.txt')
+
+DEBUG = True
 
 # -------------------------------------------------------------------
 # CONFIG
@@ -26,10 +31,10 @@ TRANSLATOR_REGION = secrets.get("translate_region", "global")
 SOURCE_LANGUAGE = "en-US"
 # TARGET_LANGUAGE = "zh-CN"
 # TTS_VOICE = "zh-CN-XiaoxiaoNeural"
-# TARGET_LANGUAGE = "pt-BR"
-# TTS_VOICE = "pt-BR-FranciscaNeural"
-TARGET_LANGUAGE = "es-ES"
-TTS_VOICE = "es-ES-ElviraNeural"
+TARGET_LANGUAGE = "pt-BR"
+TTS_VOICE = "pt-BR-FranciscaNeural"
+# TARGET_LANGUAGE = "es-ES"
+# TTS_VOICE = "es-ES-ElviraNeural"
 # TARGET_LANGUAGE = "fr-FR"
 # TTS_VOICE = "fr-FR-DeniseNeural"
 # TARGET_LANGUAGE = "ja-JP"
@@ -134,6 +139,15 @@ def mt_worker(mt_q, tts_q):
         if not text.strip():
             tts_q.put(item) 
             continue
+
+        if DEBUG:
+            time1 = time.perf_counter()
+            match = matcher.find_best_match(text, score_threshold=70)
+            if match:
+                print(f"Found Match: '{match[0]}' (Confidence: {match[1]})")
+                text = match[0]
+            time2 = time.perf_counter()
+            print("Matching took", time2 - time1, "seconds")
 
         # ---------------------------------------------------------
         # DEDUPLICATION FILTER
